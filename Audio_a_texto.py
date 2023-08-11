@@ -2,11 +2,6 @@ import os
 import subprocess
 import speech_recognition as sr
 
-def convert_to_wav(audio_file):
-    wav_file = os.path.splitext(audio_file)[0] + ".wav"
-    subprocess.run(["ffmpeg", "-i", audio_file, "-acodec", "pcm_s16le", "-ar", "16000", wav_file], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    return wav_file
-
 def audio_to_text(audio_file):
     recognizer = sr.Recognizer()
     with sr.AudioFile(audio_file) as source:
@@ -20,20 +15,14 @@ def audio_to_text(audio_file):
             return f"Error al solicitar el servicio de Google: {e}"
 
 def main():
-    audio_file = input("Ingrese la ruta del archivo de audio: ")
+    audio_file = input("Ingrese la ruta del archivo WAV: ")
 
     if not os.path.isfile(audio_file):
         print("El archivo no existe")
         return
 
-    # Convertir a formato WAV
-    wav_file = convert_to_wav(audio_file)
-
     # Realizar la transcripción
-    transcription = audio_to_text(wav_file)
-
-    # Eliminar el archivo WAV generado
-    os.remove(wav_file)
+    transcription = audio_to_text(audio_file)
 
     # Crear el archivo de texto
     txt_file = os.path.splitext(audio_file)[0] + ".txt"
