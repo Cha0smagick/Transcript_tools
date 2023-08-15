@@ -1,0 +1,4 @@
+gtts
+speechrecognition
+openai
+bardapi
