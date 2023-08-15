@@ -5,7 +5,7 @@ from gtts import gTTS
 import openai
 from bardapi import Bard
 
-# Configuración de la API de OpenAI
+# Configuración de la API de OpenAI y BARD
 openai.api_key = 'TU_CLAVE_DE_API_OPENAI'
 bard_api_token = 'TU_TOKEN_DE_API_BARD'
 
@@ -20,12 +20,12 @@ def audio_to_text_and_transcribe(audio_file):
             return "No se pudo reconocer el audio"
         except sr.RequestError as e:
             return f"Error al solicitar el servicio de Google: {e}"
-
+# Funcion texto a audio
 def text_to_speech(text, output_file):
     tts = gTTS(text, lang='es')
     tts.save(output_file)
     print(f"El archivo de audio '{output_file}' ha sido creado exitosamente.")
-
+#Funcion mejorar texto con OpenAI
 def mejorar_texto_with_openai(input_text):
     parrafos = input_text.split('\n\n')
     parrafos_mejorados = []
@@ -41,7 +41,7 @@ def mejorar_texto_with_openai(input_text):
 
     texto_mejorado = '\n\n'.join(parrafos_mejorados)
     return texto_mejorado
-
+# Mejorar texto con bard
 def mejorar_texto_with_bard(input_file_path):
     bard = Bard(token_from_browser=True)
     with open(input_file_path, 'r', encoding='utf-8') as file:
@@ -52,7 +52,7 @@ def mejorar_texto_with_bard(input_file_path):
     with open(output_file_path, 'w', encoding='utf-8') as file:
         file.write(corrected_text)
     return output_file_path
-
+#Funcion principal del programa
 def main():
     while True:
         print("¡Bienvenido! Por favor, elige una opción:")
