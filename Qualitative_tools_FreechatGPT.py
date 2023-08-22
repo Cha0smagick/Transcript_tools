@@ -5,6 +5,7 @@ from gtts import gTTS
 import codecs
 from gpt4free import you
 from bardapi import Bard
+from moviepy.editor import VideoFileClip  # Módulo extra
 
 bard_api_token = 'TU_TOKEN_DE_API_BARD'
 
@@ -66,6 +67,22 @@ def mejorar_texto_with_bard(input_file_path):
         file.write(corrected_text)
     return output_file_path
 
+# Función para convertir un archivo .mp4 a .wav
+def convert_mp4_to_wav(input_file, output_file):
+    try:
+        # Cargamos el archivo .mp4
+        video = VideoFileClip(input_file)
+        
+        # Extraemos el audio del video
+        audio = video.audio
+        
+        # Guardamos el audio como archivo .wav
+        audio.write_audiofile(output_file, codec='pcm_s16le')
+        
+        print(f"Conversión exitosa de {input_file} a {output_file}")
+    except Exception as e:
+        print(f"Error al convertir {input_file} a {output_file}: {str(e)}")
+
 # Función principal del programa
 def main():
     while True:
@@ -73,9 +90,10 @@ def main():
         print("1) Audio a Texto")
         print("2) Texto a Audio")
         print("3) Optimización Semántica")
-        print("4) Salir")
+        print("4) Convertir MP4 a WAV")
+        print("5) Salir")
 
-        option = input("Selecciona una opción (1/2/3/4): ")
+        option = input("Selecciona una opción (1/2/3/4/5): ")
 
         if option == '1':
             audio_file = input("Ingrese la ruta del archivo WAV: ")
@@ -123,6 +141,13 @@ def main():
             else:
                 print("Opción no válida.")
         elif option == '4':
+            input_file = input("Ingrese la ruta del archivo MP4: ")
+            if not os.path.isfile(input_file):
+                print("El archivo no existe")
+                continue
+            output_file = input("Ingrese el nombre del archivo de salida WAV: ")
+            convert_mp4_to_wav(input_file, output_file)
+        elif option == '5':
             print("Saliendo del programa.")
             break
         else:
