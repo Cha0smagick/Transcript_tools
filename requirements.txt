@@ -2,3 +2,5 @@ gtts
 speechrecognition
 openai
 bardapi
+moviepy
+gpt4free
