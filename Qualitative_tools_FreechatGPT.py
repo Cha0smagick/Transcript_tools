@@ -90,15 +90,22 @@ def convert_to_wav(input_file, output_file):
 def main():
     while True:
         print("¡Bienvenido! Por favor, elige una opción:")
-        print("1) Audio a Texto")
-        print("2) Texto a Audio")
+        print("1) Convertir a WAV (MP4, MPG, MP3)")
+        print("2) Audio a Texto")
         print("3) Optimización Semántica")
-        print("4) Convertir a WAV (MP4, MPG, MP3)")
-        print("5) Salir")
+        print("4) BONUS: Texto a Audio")
+        print("5) Salir del programa")
 
         option = input("Selecciona una opción (1/2/3/4/5): ")
 
         if option == '1':
+            input_file = input("Ingrese la ruta del archivo (MP4, MPG o MP3) a convertir a WAV: ")
+            if not os.path.isfile(input_file):
+                print("El archivo no existe")
+                continue
+            output_file = input("Ingrese el nombre del archivo de salida WAV: ")
+            convert_to_wav(input_file, output_file)
+        elif option == '2':
             audio_file = input("Ingrese la ruta del archivo WAV: ")
             if not os.path.isfile(audio_file):
                 print("El archivo no existe")
@@ -108,16 +115,6 @@ def main():
             with open(txt_file, "w") as f:
                 f.write(transcription)
             print(f"Transcripción completada. El archivo de texto se encuentra en: {txt_file}")
-        elif option == '2':
-            txt_file = input("Por favor, introduce la ruta del archivo .txt: ")
-            output_file = input("Por favor, introduce el nombre del archivo de audio de salida: ")
-            if txt_file.endswith('.txt'):
-                with open(txt_file, 'r', encoding='utf-8') as file:
-                    text = file.read()
-                    text_to_speech(text, output_file)
-                print(f"Archivo de audio '{output_file}' ha sido creado exitosamente.")
-            else:
-                print("La ruta proporcionada no parece ser un archivo .txt válido.")
         elif option == '3':
             print("Selecciona el motor de optimización semántica:")
             print("1) ChatGPT")
@@ -145,12 +142,15 @@ def main():
             else:
                 print("Opción no válida.")
         elif option == '4':
-            input_file = input("Ingrese la ruta del archivo (MP4, MPG o MP3) a convertir a WAV: ")
-            if not os.path.isfile(input_file):
-                print("El archivo no existe")
-                continue
-            output_file = input("Ingrese el nombre del archivo de salida WAV: ")
-            convert_to_wav(input_file, output_file)
+            txt_file = input("Por favor, introduce la ruta del archivo .txt: ")
+            output_file = input("Por favor, introduce el nombre del archivo de audio de salida: ")
+            if txt_file.endswith('.txt'):
+                with open(txt_file, 'r', encoding='utf-8') as file:
+                    text = file.read()
+                    text_to_speech(text, output_file)
+                print(f"Archivo de audio '{output_file}' ha sido creado exitosamente.")
+            else:
+                print("La ruta proporcionada no parece ser un archivo .txt válido.")
         elif option == '5':
             print("Saliendo del programa.")
             break
