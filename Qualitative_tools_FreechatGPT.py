@@ -68,26 +68,10 @@ def mejorar_texto_with_bard(input_file_path):
         file.write(corrected_text)
     return output_file_path
 
-# Función para convertir un archivo .mp4 a .wav
-def convert_mp4_to_wav(input_file, output_file):
+# Función para convertir un archivo a .wav (admite mp4, mpg y mp3)
+def convert_to_wav(input_file, output_file):
     try:
-        # Cargamos el archivo .mp4
-        video = VideoFileClip(input_file)
-
-        # Extraemos el audio del video
-        audio = video.audio
-
-        # Guardamos el audio como archivo .wav
-        audio.write_audiofile(output_file, codec='pcm_s16le')
-
-        print(f"Conversión exitosa de {input_file} a {output_file}")
-    except Exception as e:
-        print(f"Error al convertir {input_file} a {output_file}: {str(e)}")
-
-# Función para convertir archivos .mpg o .mp3 a .wav
-def convert_mpg_mp3_to_wav(input_file, output_file):
-    try:
-        if input_file.lower().endswith('.mpg'):
+        if input_file.lower().endswith(('.mp4', '.mpg')):
             video = VideoFileClip(input_file)
             audio = video.audio
             audio.write_audiofile(output_file, codec='pcm_s16le')
@@ -95,7 +79,7 @@ def convert_mpg_mp3_to_wav(input_file, output_file):
             audio = AudioSegment.from_mp3(input_file)
             audio.export(output_file, format='wav')
         else:
-            print("Formato de archivo no compatible. Se admiten archivos .mpg y .mp3.")
+            print("Formato de archivo no compatible. Se admiten archivos .mp4, .mpg y .mp3.")
             return
 
         print(f"Conversión exitosa de {input_file} a {output_file}")
@@ -109,11 +93,10 @@ def main():
         print("1) Audio a Texto")
         print("2) Texto a Audio")
         print("3) Optimización Semántica")
-        print("4) Convertir MP4 a WAV")
-        print("5) Convertir MPG/MP3 a WAV")
-        print("6) Salir")
+        print("4) Convertir a WAV (MP4, MPG, MP3)")
+        print("5) Salir")
 
-        option = input("Selecciona una opción (1/2/3/4/5/6): ")
+        option = input("Selecciona una opción (1/2/3/4/5): ")
 
         if option == '1':
             audio_file = input("Ingrese la ruta del archivo WAV: ")
@@ -162,21 +145,13 @@ def main():
             else:
                 print("Opción no válida.")
         elif option == '4':
-            input_file = input("Ingrese la ruta del archivo MP4: ")
+            input_file = input("Ingrese la ruta del archivo (MP4, MPG o MP3) a convertir a WAV: ")
             if not os.path.isfile(input_file):
                 print("El archivo no existe")
                 continue
             output_file = input("Ingrese el nombre del archivo de salida WAV: ")
-            convert_mp4_to_wav(input_file, output_file)
+            convert_to_wav(input_file, output_file)
         elif option == '5':
-            input_file = input("Ingrese la ruta del archivo MPG o MP3: ")
-            if not os.path.isfile(input_file):
-                print("El archivo no existe")
-                continue
-            output_file = input("Ingrese el nombre del archivo de salida WAV: ")
-            convert_mpg_mp3_to_wav(input_file, output_file)
-            print(f"Conversión exitosa de {input_file} a {output_file}")
-        elif option == '6':
             print("Saliendo del programa.")
             break
         else:
