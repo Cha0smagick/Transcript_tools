@@ -1,0 +1,1 @@
+Corrige semánticamente el texto entre comillas, poniendo puntuación y saltos de línea donde sea requerido. respeta los slangs y los modismos, asi como los titubeos y usos raros del lenguaje, ya que pueden ser importantes. no cambies ninguna palabra del texto: "".
