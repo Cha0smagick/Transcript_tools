@@ -5,7 +5,8 @@ from gtts import gTTS
 import codecs
 from gpt4free import you
 from bardapi import Bard
-from moviepy.editor import VideoFileClip  # Módulo extra
+from moviepy.editor import VideoFileClip
+from pydub import AudioSegment
 
 bard_api_token = 'TU_TOKEN_DE_API_BARD'
 
@@ -35,10 +36,10 @@ def text_to_speech(text, output_file):
 def mejorar_texto_with_openai(input_text):
     parrafos = input_text.split('\n\n')
     parrafos_mejorados = []
-    
+
     # chatbot
     chat = []
-    
+
     for parrafo in parrafos:
         # Solicitar la mejora al modelo ChatGPT
         response = you.Completion.create(
@@ -47,7 +48,7 @@ def mejorar_texto_with_openai(input_text):
         )
         parrafo_mejorado = decode_response(response.text).strip()
         parrafos_mejorados.append(parrafo_mejorado)
-        
+
         # Agregar la respuesta al chat
         chat.append({"role": "system", "content": "You: " + parrafo})
         chat.append({"role": "system", "content": "ChatGPT: " + parrafo_mejorado})
@@ -72,13 +73,31 @@ def convert_mp4_to_wav(input_file, output_file):
     try:
         # Cargamos el archivo .mp4
         video = VideoFileClip(input_file)
-        
+
         # Extraemos el audio del video
         audio = video.audio
-        
+
         # Guardamos el audio como archivo .wav
         audio.write_audiofile(output_file, codec='pcm_s16le')
-        
+
+        print(f"Conversión exitosa de {input_file} a {output_file}")
+    except Exception as e:
+        print(f"Error al convertir {input_file} a {output_file}: {str(e)}")
+
+# Función para convertir archivos .mpg o .mp3 a .wav
+def convert_mpg_mp3_to_wav(input_file, output_file):
+    try:
+        if input_file.lower().endswith('.mpg'):
+            video = VideoFileClip(input_file)
+            audio = video.audio
+            audio.write_audiofile(output_file, codec='pcm_s16le')
+        elif input_file.lower().endswith('.mp3'):
+            audio = AudioSegment.from_mp3(input_file)
+            audio.export(output_file, format='wav')
+        else:
+            print("Formato de archivo no compatible. Se admiten archivos .mpg y .mp3.")
+            return
+
         print(f"Conversión exitosa de {input_file} a {output_file}")
     except Exception as e:
         print(f"Error al convertir {input_file} a {output_file}: {str(e)}")
@@ -91,9 +110,10 @@ def main():
         print("2) Texto a Audio")
         print("3) Optimización Semántica")
         print("4) Convertir MP4 a WAV")
-        print("5) Salir")
+        print("5) Convertir MPG/MP3 a WAV")
+        print("6) Salir")
 
-        option = input("Selecciona una opción (1/2/3/4/5): ")
+        option = input("Selecciona una opción (1/2/3/4/5/6): ")
 
         if option == '1':
             audio_file = input("Ingrese la ruta del archivo WAV: ")
@@ -112,6 +132,7 @@ def main():
                 with open(txt_file, 'r', encoding='utf-8') as file:
                     text = file.read()
                     text_to_speech(text, output_file)
+                print(f"Archivo de audio '{output_file}' ha sido creado exitosamente.")
             else:
                 print("La ruta proporcionada no parece ser un archivo .txt válido.")
         elif option == '3':
@@ -148,6 +169,14 @@ def main():
             output_file = input("Ingrese el nombre del archivo de salida WAV: ")
             convert_mp4_to_wav(input_file, output_file)
         elif option == '5':
+            input_file = input("Ingrese la ruta del archivo MPG o MP3: ")
+            if not os.path.isfile(input_file):
+                print("El archivo no existe")
+                continue
+            output_file = input("Ingrese el nombre del archivo de salida WAV: ")
+            convert_mpg_mp3_to_wav(input_file, output_file)
+            print(f"Conversión exitosa de {input_file} a {output_file}")
+        elif option == '6':
             print("Saliendo del programa.")
             break
         else:
