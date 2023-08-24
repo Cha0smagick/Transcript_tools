@@ -1,6 +1,9 @@
-gtts
-speechrecognition
 openai
+colorama
+speechrecognition
+gtts
+codecs
+gpt4free
 bardapi
 moviepy
-gpt4free
+pydub
