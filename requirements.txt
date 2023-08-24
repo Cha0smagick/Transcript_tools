@@ -1,7 +1,7 @@
 openai
 colorama
 speechrecognition
-gtts
+gTTS
 codecs
 gpt4free
 bardapi
