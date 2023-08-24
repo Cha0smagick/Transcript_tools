@@ -7,6 +7,7 @@ from gpt4free import you
 from bardapi import Bard
 from moviepy.editor import VideoFileClip
 from pydub import AudioSegment
+from pydub.playback import play
 
 bard_api_token = 'TU_TOKEN_DE_API_BARD'
 
@@ -86,17 +87,43 @@ def convert_to_wav(input_file, output_file):
     except Exception as e:
         print(f"Error al convertir {input_file} a {output_file}: {str(e)}")
 
+# Función para optimizar archivo WAV
+def optimizar_audio_wav(input_file):
+    try:
+        # Cargar el archivo WAV
+        audio = AudioSegment.from_wav(input_file)
+
+        # Aumentar el volumen en 10 dB (ajusta según sea necesario)
+        audio = audio + 10
+
+        # Amplificar las frecuencias vocales (acentuar la voz)
+        audio = audio.high_pass_filter(500)  # Eliminar frecuencias bajas
+        audio = audio.low_pass_filter(5000)  # Eliminar frecuencias altas
+
+        # Reproducir el audio optimizado
+        play(audio)
+
+        # Guardar el audio optimizado en un nuevo archivo
+        output_path = "audio_optimizado.wav"
+        audio.export(output_path, format="wav")
+
+        print(f"El audio optimizado se ha guardado en {output_path}")
+
+    except Exception as e:
+        print(f"Se produjo un error: {e}")
+
 # Función principal del programa
 def main():
     while True:
-        print("¡Bienvenido! Por favor, elige una opción:")
+        print("¡Bienvenido al programa de análisis de encuestas del INIF! Por favor, elige una opción:")
         print("1) Convertir a WAV (MP4, MPG, MP3)")
-        print("2) Audio a Texto")
-        print("3) Optimización Semántica")
-        print("4) BONUS: Texto a Audio")
-        print("5) Salir del programa")
+        print("2) Optimización de audio para archivos .wav")
+        print("3) Audio a Texto")
+        print("4) Optimización Semántica")
+        print("5) BONUS: Texto a Audio")
+        print("6) Salir del programa")
 
-        option = input("Selecciona una opción (1/2/3/4/5): ")
+        option = input("Selecciona una opción (1/2/3/4/5/6): ")
 
         if option == '1':
             input_file = input("Ingrese la ruta del archivo (MP4, MPG o MP3) a convertir a WAV: ")
@@ -110,12 +137,18 @@ def main():
             if not os.path.isfile(audio_file):
                 print("El archivo no existe")
                 continue
+            optimizar_audio_wav(audio_file)
+        elif option == '3':
+            audio_file = input("Ingrese la ruta del archivo WAV: ")
+            if not os.path.isfile(audio_file):
+                print("El archivo no existe")
+                continue
             transcription = audio_to_text_and_transcribe(audio_file)
             txt_file = os.path.splitext(audio_file)[0] + ".txt"
             with open(txt_file, "w") as f:
                 f.write(transcription)
             print(f"Transcripción completada. El archivo de texto se encuentra en: {txt_file}")
-        elif option == '3':
+        elif option == '4':
             print("Selecciona el motor de optimización semántica:")
             print("1) ChatGPT")
             print("2) Bard AI")
@@ -141,7 +174,7 @@ def main():
                 print(f"Texto corregido por Bard AI y guardado en: {output_file_path}")
             else:
                 print("Opción no válida.")
-        elif option == '4':
+        elif option == '5':
             txt_file = input("Por favor, introduce la ruta del archivo .txt: ")
             output_file = input("Por favor, introduce el nombre del archivo de audio de salida: ")
             if txt_file.endswith('.txt'):
@@ -151,7 +184,7 @@ def main():
                 print(f"Archivo de audio '{output_file}' ha sido creado exitosamente.")
             else:
                 print("La ruta proporcionada no parece ser un archivo .txt válido.")
-        elif option == '5':
+        elif option == '6':
             print("Saliendo del programa.")
             break
         else:
