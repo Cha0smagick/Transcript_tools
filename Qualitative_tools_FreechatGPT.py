@@ -8,6 +8,10 @@ from bardapi import Bard
 from moviepy.editor import VideoFileClip
 from pydub import AudioSegment
 from pydub.playback import play
+from colorama import Fore, Style  # Importamos colorama
+
+# Inicializamos colorama
+Fore.RESET
 
 bard_api_token = 'TU_TOKEN_DE_API_BARD'
 
@@ -115,13 +119,25 @@ def optimizar_audio_wav(input_file):
 # Función principal del programa
 def main():
     while True:
-        print("¡Bienvenido al programa de análisis de encuestas del INIF! Por favor, elige una opción:")
-        print("1) Convertir a WAV (MP4, MPG, MP3)")
-        print("2) Optimización de audio para archivos .wav")
-        print("3) Audio a Texto")
-        print("4) Optimización Semántica")
-        print("5) BONUS: Texto a Audio")
-        print("6) Salir del programa")
+        # Diseño ASCII
+        print(Fore.CYAN + r"""
+        
+██╗███╗   ██╗██╗███████╗
+██║████╗  ██║██║██╔════╝
+██║██╔██╗ ██║██║█████╗  
+██║██║╚██╗██║██║██╔══╝  
+██║██║ ╚████║██║██║     
+╚═╝╚═╝  ╚═══╝╚═╝╚═╝    
+
+    """ + Style.RESET_ALL)
+
+        print(Fore.GREEN + "¡Bienvenido al programa de análisis de encuestas del INIF! Por favor, elige una opción:")
+        print(Fore.YELLOW + "1) Convertir a WAV (MP4, MPG, MP3)")
+        print(Fore.BLUE + "2) Optimización de audio para archivos .wav")
+        print(Fore.MAGENTA + "3) Audio a Texto")
+        print(Fore.RED + "4) Optimización Semántica")
+        print(Fore.CYAN + "5) BONUS: Texto a Audio")
+        print(Fore.WHITE + "6) Salir del programa" + Style.RESET_ALL)
 
         option = input("Selecciona una opción (1/2/3/4/5/6): ")
 
@@ -149,10 +165,10 @@ def main():
                 f.write(transcription)
             print(f"Transcripción completada. El archivo de texto se encuentra en: {txt_file}")
         elif option == '4':
-            print("Selecciona el motor de optimización semántica:")
-            print("1) ChatGPT")
-            print("2) Bard AI")
-            sub_option = input("Selecciona una opción (1/2): ")
+            print(Fore.RED + "Selecciona el motor de optimización semántica:")
+            print(Fore.YELLOW + "1) ChatGPT")
+            print(Fore.BLUE + "2) Bard AI")
+            sub_option = input("Selecciona una opción (1/2): " + Style.RESET_ALL)
             if sub_option == '1':
                 input_file_path = input("Ingresa la ruta del archivo .txt: ")
                 if not os.path.isfile(input_file_path):
