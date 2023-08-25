@@ -1,9 +1,11 @@
 openai
 colorama
-speechrecognition
+SpeechRecognition
 gTTS
 codecs
 gpt4free
 bardapi
 moviepy
 pydub
+gpt4free
+bardapi
