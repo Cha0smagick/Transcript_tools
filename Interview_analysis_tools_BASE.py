@@ -9,6 +9,7 @@ from pydub import AudioSegment
 from pydub.playback import play
 from colorama import Fore, Style
 from gpt4free import you  # Importamos gpt4free
+import time  # Importamos la biblioteca time
 
 # Inicializamos colorama
 Fore.RESET
@@ -65,14 +66,21 @@ def cargar_entrevista(ruta_archivo):
         # Preparar el texto para la solicitud al bot
         solicitud_bot = (
             'El texto entre comillas sencillas que te doy a continuación es la transcripción de una entrevista entre dos personas.'
-            ' Organiza la entrevista y diferencia el entrevistado del entrevistador'
-            ' No cambies palabras ni significados ni reescribas nada, lo único que se necesita es que diferencies el entrevistado y el entrevistador con rótulos y saltos de línea:'
+            ' Organiza la entrevista y diferencia el entrevistado del entrevistador, diferenciando la linea que cada uno dijo'
+            ' No cambies palabras, ni significados. Lo único que se necesita es que diferencies el entrevistado y el entrevistador lo mejor que puedas dentro de la entrevista. esto mediante separacion de los parrafos o lineas de conversacion de cada uno:'
             f'\n\n"{entrevista_text}"'
         )
 
-        # Solicitar análisis al bot
-        response = you.Completion.create(prompt=solicitud_bot)
-        respuesta_bot = decode_response(response.text)
+        while True:  # Agregamos un bucle para reintentar hasta obtener una respuesta
+            # Solicitar análisis al bot
+            response = you.Completion.create(prompt=solicitud_bot)
+            respuesta_bot = decode_response(response.text)
+
+            if respuesta_bot != "Unable to fetch the response, Please try again.":
+                break  # Salir del bucle si la respuesta es diferente de "Unable to fetch the response, Please try again."
+
+            print("No se pudo obtener una respuesta. Reintentando en 5 segundos...")
+            time.sleep(5)  # Esperar 5 segundos antes de volver a intentar
 
         # Guardar el resultado formateado en un nuevo archivo
         with open('entrevista_formateada.txt', 'w', encoding='utf-8') as salida_file:
@@ -105,7 +113,7 @@ def main():
         print(Fore.BLUE + "2) Optimización de audio para archivos .mp3")
         print(Fore.RED + "3) Audio a Texto")
         print(Fore.MAGENTA + "4) Optimización semántica de entrevistas")
-        print(Fore.RED + "5) Salir del programa" + Style.RESET_ALL)
+        print(Fore.MAGENTA + "5) Salir del programa" + Style.RESET_ALL)
 
         option = input("Selecciona una opción (1/2/3/4/5): ")
 
