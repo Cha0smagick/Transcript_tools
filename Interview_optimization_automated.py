@@ -65,8 +65,8 @@ def cargar_entrevista(ruta_archivo):
         # Preparar el texto para la solicitud al bot
         solicitud_bot = (
             'El texto entre comillas sencillas que te doy a continuación es la transcripción de una entrevista entre dos personas.'
-            ' Organiza la entrevista y diferencia el entrevistado del entrevistador'
-            ' No cambies palabras ni significados ni reescribas nada, lo único que se necesita es que diferencies el entrevistado y el entrevistador con rótulos y saltos de línea:'
+            ' Organiza la entrevista y diferencia el entrevistado del entrevistador, diferenciando la linea que cada uno dijo'
+            ' No cambies palabras, ni significados. Lo único que se necesita es que diferencies el entrevistado y el entrevistador lo mejor que puedas dentro de la entrevista. esto mediante separacion de los parrafos o lineas de conversacion de cada uno:'
             f'\n\n"{entrevista_text}"'
         )
 
