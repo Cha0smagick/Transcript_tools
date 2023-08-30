@@ -9,3 +9,4 @@ moviepy
 pydub
 gpt4free
 bardapi
+openai-whisper
