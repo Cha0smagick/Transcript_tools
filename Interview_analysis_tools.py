@@ -3,11 +3,12 @@ import subprocess
 import speech_recognition as sr
 from gtts import gTTS
 import codecs
-import whisper  # Importamos Whisper para transcripción de audio
+import whisper
 from moviepy.editor import VideoFileClip
 from pydub import AudioSegment
 from pydub.playback import play
-from colorama import Fore, Style  # Importamos colorama
+from colorama import Fore, Style
+from gpt4free import you  # Importamos gpt4free
 
 # Inicializamos colorama
 Fore.RESET
@@ -55,6 +56,35 @@ def optimizar_audio_mp3(input_file):
     except Exception as e:
         print(f"Se produjo un error: {e}")
 
+# Función para cargar y formatear una entrevista desde un archivo .txt
+def cargar_entrevista(ruta_archivo):
+    try:
+        with open(ruta_archivo, 'r', encoding='utf-8') as entrevista_file:
+            entrevista_text = entrevista_file.read()
+
+        # Preparar el texto para la solicitud al bot
+        solicitud_bot = (
+            'El texto entre comillas sencillas que te doy a continuación es la transcripción de una entrevista entre dos personas.'
+            ' Organiza la entrevista y diferencia el entrevistado del entrevistador'
+            ' No cambies palabras ni significados ni reescribas nada, lo único que se necesita es que diferencies el entrevistado y el entrevistador con rótulos y saltos de línea:'
+            f'\n\n"{entrevista_text}"'
+        )
+
+        # Solicitar análisis al bot
+        response = you.Completion.create(prompt=solicitud_bot)
+        respuesta_bot = decode_response(response.text)
+
+        # Guardar el resultado formateado en un nuevo archivo
+        with open('entrevista_formateada.txt', 'w', encoding='utf-8') as salida_file:
+            salida_file.write(respuesta_bot)
+
+        print("La entrevista ha sido formateada y guardada en 'entrevista_formateada.txt'.")
+
+    except FileNotFoundError:
+        print("El archivo de entrevista no se encontró.")
+    except Exception as e:
+        print("Ocurrió un error al procesar la entrevista:", str(e))
+
 # Función principal del programa
 def main():
     while True:
@@ -73,10 +103,11 @@ def main():
         print(Fore.GREEN + "¡Bienvenido al programa de análisis de encuestas del INIF! Por favor, elige una opción:")
         print(Fore.YELLOW + "1) Convertir a MP3 (MP4, MPG, MP3)")
         print(Fore.BLUE + "2) Optimización de audio para archivos .mp3")
-        print(Fore.MAGENTA + "3) Audio a Texto")
-        print(Fore.WHITE + "4) Salir del programa" + Style.RESET_ALL)
+        print(Fore.RED + "3) Audio a Texto")
+        print(Fore.MAGENTA + "4) Optimización semántica de entrevistas")
+        print(Fore.RED + "5) Salir del programa" + Style.RESET_ALL)
 
-        option = input("Selecciona una opción (1/2/3/4): ")
+        option = input("Selecciona una opción (1/2/3/4/5): ")
 
         if option == '1':
             input_file = input("Ingrese la ruta del archivo (MP4, MPG o MP3) a convertir a MP3: ")
@@ -114,6 +145,10 @@ def main():
 
             print(f"La transcripción se ha guardado en {output_file}")
         elif option == '4':
+            # Solicitar al usuario la ruta del archivo de entrevista
+            ruta_archivo_entrevista = input("Por favor, ingrese la ruta completa del archivo de la entrevista (debe estar en formato .txt): ")
+            cargar_entrevista(ruta_archivo_entrevista)
+        elif option == '5':
             print("Saliendo del programa.")
             break
         else:
