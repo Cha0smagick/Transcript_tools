@@ -4,7 +4,6 @@ import speech_recognition as sr
 from gtts import gTTS
 import codecs
 import whisper  # Importamos Whisper para transcripción de audio
-from bardapi import Bard
 from moviepy.editor import VideoFileClip
 from pydub import AudioSegment
 from pydub.playback import play
@@ -12,8 +11,6 @@ from colorama import Fore, Style  # Importamos colorama
 
 # Inicializamos colorama
 Fore.RESET
-
-bard_api_token = 'TU_TOKEN_DE_API_BARD'
 
 # Función para decodificar la respuesta en texto legible
 def decode_response(response):
@@ -77,11 +74,9 @@ def main():
         print(Fore.YELLOW + "1) Convertir a MP3 (MP4, MPG, MP3)")
         print(Fore.BLUE + "2) Optimización de audio para archivos .mp3")
         print(Fore.MAGENTA + "3) Audio a Texto")
-        print(Fore.RED + "4) Optimización Semántica")
-        print(Fore.CYAN + "5) BONUS: Texto a Audio")
-        print(Fore.WHITE + "6) Salir del programa" + Style.RESET_ALL)
+        print(Fore.WHITE + "4) Salir del programa" + Style.RESET_ALL)
 
-        option = input("Selecciona una opción (1/2/3/4/5/6): ")
+        option = input("Selecciona una opción (1/2/3/4): ")
 
         if option == '1':
             input_file = input("Ingrese la ruta del archivo (MP4, MPG o MP3) a convertir a MP3: ")
@@ -119,42 +114,6 @@ def main():
 
             print(f"La transcripción se ha guardado en {output_file}")
         elif option == '4':
-            print(Fore.RED + "Selecciona el motor de optimización semántica:")
-            print(Fore.YELLOW + "1) ChatGPT")
-            print(Fore.BLUE + "2) Bard AI")
-            sub_option = input("Selecciona una opción (1/2): " + Style.RESET_ALL)
-            if sub_option == '1':
-                input_file_path = input("Ingresa la ruta del archivo .txt: ")
-                if not os.path.isfile(input_file_path):
-                    print("El archivo no existe")
-                    continue
-                with open(input_file_path, 'r', encoding='utf-8') as file:
-                    input_text = file.read()
-                improved_text = mejorar_texto_with_openai(input_text)
-                output_file_path = os.path.splitext(input_file_path)[0] + "_optimizado_chatgpt.txt"
-                with open(output_file_path, 'w', encoding='utf-8') as file:
-                    file.write(improved_text)
-                print(f"Texto optimizado por ChatGPT y guardado en: {output_file_path}")
-            elif sub_option == '2':
-                input_file_path = input("Ingresa la ruta del archivo .txt: ")
-                if not os.path.isfile(input_file_path):
-                    print("El archivo no existe")
-                    continue
-                output_file_path = mejorar_texto_with_bard(input_file_path)
-                print(f"Texto corregido por Bard AI y guardado en: {output_file_path}")
-            else:
-                print("Opción no válida.")
-        elif option == '5':
-            txt_file = input("Por favor, introduce la ruta del archivo .txt: ")
-            output_file = input("Por favor, introduce el nombre del archivo de audio de salida: ")
-            if txt_file.endswith('.txt'):
-                with open(txt_file, 'r', encoding='utf-8') as file:
-                    text = file.read()
-                    text_to_speech(text, output_file)
-                print(f"Archivo de audio '{output_file}' ha sido creado exitosamente.")
-            else:
-                print("La ruta proporcionada no parece ser un archivo .txt válido.")
-        elif option == '6':
             print("Saliendo del programa.")
             break
         else:
