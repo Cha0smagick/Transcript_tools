@@ -3,7 +3,7 @@ import subprocess
 import speech_recognition as sr
 from gtts import gTTS
 import codecs
-from gpt4free import you
+import whisper  # Importamos Whisper para transcripción de audio
 from bardapi import Bard
 from moviepy.editor import VideoFileClip
 from pydub import AudioSegment
@@ -19,70 +19,12 @@ bard_api_token = 'TU_TOKEN_DE_API_BARD'
 def decode_response(response):
     return codecs.decode(response, 'unicode_escape')
 
-def audio_to_text_and_transcribe(audio_file):
-    recognizer = sr.Recognizer()
-    with sr.AudioFile(audio_file) as source:
-        audio_data = recognizer.record(source)
-        try:
-            text = recognizer.recognize_google(audio_data, language="es-ES")
-            return text
-        except sr.UnknownValueError:
-            return "No se pudo reconocer el audio"
-        except sr.RequestError as e:
-            return f"Error al solicitar el servicio de Google: {e}"
-
-# Función texto a audio
-def text_to_speech(text, output_file):
-    tts = gTTS(text, lang='es')
-    tts.save(output_file)
-    print(f"El archivo de audio '{output_file}' ha sido creado exitosamente.")
-
-# Función para mejorar texto con ChatGPT
-def mejorar_texto_with_openai(input_text):
-    parrafos = input_text.split('\n\n')
-    parrafos_mejorados = []
-
-    # chatbot
-    chat = []
-
-    for parrafo in parrafos:
-        # Solicitar la mejora al modelo ChatGPT
-        response = you.Completion.create(
-            prompt=parrafo,
-            chat=chat
-        )
-        parrafo_mejorado = decode_response(response.text).strip()
-        parrafos_mejorados.append(parrafo_mejorado)
-
-        # Agregar la respuesta al chat
-        chat.append({"role": "system", "content": "You: " + parrafo})
-        chat.append({"role": "system", "content": "ChatGPT: " + parrafo_mejorado})
-
-    texto_mejorado = '\n\n'.join(parrafos_mejorados)
-    return texto_mejorado
-
-# Función para mejorar texto con Bard
-def mejorar_texto_with_bard(input_file_path):
-    bard = Bard(token_from_browser=True)
-    with open(input_file_path, 'r', encoding='utf-8') as file:
-        input_text = file.read()
-    res = bard.get_answer(input_text)
-    corrected_text = res['text']
-    output_file_path = os.path.splitext(input_file_path)[0] + "_corregido.txt"
-    with open(output_file_path, 'w', encoding='utf-8') as file:
-        file.write(corrected_text)
-    return output_file_path
-
-# Función para convertir un archivo a .wav (admite mp4, mpg y mp3)
-def convert_to_wav(input_file, output_file):
+# Función para convertir un archivo a .mp3 (admite mp4, mpg y mp3)
+def convert_to_mp3(input_file, output_file):
     try:
-        if input_file.lower().endswith(('.mp4', '.mpg')):
-            video = VideoFileClip(input_file)
-            audio = video.audio
-            audio.write_audiofile(output_file, codec='pcm_s16le')
-        elif input_file.lower().endswith('.mp3'):
-            audio = AudioSegment.from_mp3(input_file)
-            audio.export(output_file, format='wav')
+        if input_file.lower().endswith(('.mp4', '.mpg', '.mp3')):
+            audio = AudioSegment.from_file(input_file)
+            audio.export(output_file, format='mp3')
         else:
             print("Formato de archivo no compatible. Se admiten archivos .mp4, .mpg y .mp3.")
             return
@@ -91,11 +33,11 @@ def convert_to_wav(input_file, output_file):
     except Exception as e:
         print(f"Error al convertir {input_file} a {output_file}: {str(e)}")
 
-# Función para optimizar archivo WAV
-def optimizar_audio_wav(input_file):
+# Función para optimizar archivo MP3
+def optimizar_audio_mp3(input_file):
     try:
-        # Cargar el archivo WAV
-        audio = AudioSegment.from_wav(input_file)
+        # Cargar el archivo MP3
+        audio = AudioSegment.from_mp3(input_file)
 
         # Aumentar el volumen en 10 dB (ajusta según sea necesario)
         audio = audio + 10
@@ -108,8 +50,8 @@ def optimizar_audio_wav(input_file):
         play(audio)
 
         # Guardar el audio optimizado en un nuevo archivo
-        output_path = "audio_optimizado.wav"
-        audio.export(output_path, format="wav")
+        output_path = "audio_optimizado.mp3"
+        audio.export(output_path, format="mp3")
 
         print(f"El audio optimizado se ha guardado en {output_path}")
 
@@ -132,8 +74,8 @@ def main():
     """ + Style.RESET_ALL)
 
         print(Fore.GREEN + "¡Bienvenido al programa de análisis de encuestas del INIF! Por favor, elige una opción:")
-        print(Fore.YELLOW + "1) Convertir a WAV (MP4, MPG, MP3)")
-        print(Fore.BLUE + "2) Optimización de audio para archivos .wav")
+        print(Fore.YELLOW + "1) Convertir a MP3 (MP4, MPG, MP3)")
+        print(Fore.BLUE + "2) Optimización de audio para archivos .mp3")
         print(Fore.MAGENTA + "3) Audio a Texto")
         print(Fore.RED + "4) Optimización Semántica")
         print(Fore.CYAN + "5) BONUS: Texto a Audio")
@@ -142,28 +84,40 @@ def main():
         option = input("Selecciona una opción (1/2/3/4/5/6): ")
 
         if option == '1':
-            input_file = input("Ingrese la ruta del archivo (MP4, MPG o MP3) a convertir a WAV: ")
+            input_file = input("Ingrese la ruta del archivo (MP4, MPG o MP3) a convertir a MP3: ")
             if not os.path.isfile(input_file):
                 print("El archivo no existe")
                 continue
-            output_file = input("Ingrese el nombre del archivo de salida WAV: ")
-            convert_to_wav(input_file, output_file)
+            output_file = input("Ingrese el nombre del archivo de salida MP3: ")
+            convert_to_mp3(input_file, output_file)
         elif option == '2':
-            audio_file = input("Ingrese la ruta del archivo WAV: ")
+            audio_file = input("Ingrese la ruta del archivo MP3: ")
             if not os.path.isfile(audio_file):
                 print("El archivo no existe")
                 continue
-            optimizar_audio_wav(audio_file)
+            optimizar_audio_mp3(audio_file)
         elif option == '3':
-            audio_file = input("Ingrese la ruta del archivo WAV: ")
-            if not os.path.isfile(audio_file):
-                print("El archivo no existe")
-                continue
-            transcription = audio_to_text_and_transcribe(audio_file)
-            txt_file = os.path.splitext(audio_file)[0] + ".txt"
-            with open(txt_file, "w") as f:
-                f.write(transcription)
-            print(f"Transcripción completada. El archivo de texto se encuentra en: {txt_file}")
+            # Solicitar al usuario la ruta del archivo .mp3
+            file_path = input("Por favor, ingresa la ruta del archivo .mp3: ")
+
+            # Cargar el modelo Whisper
+            model = whisper.load_model("small")  # tiny, base, small, medium, large
+
+            # Transcribir el archivo de audio
+            result = model.transcribe(file_path)
+
+            # Obtener el texto transcribido
+            transcribed_text = result["text"]
+
+            # Imprimir el texto transcribido
+            print(transcribed_text)
+
+            # Exportar el texto a un archivo .txt
+            output_file = "transcripcion.txt"
+            with open(output_file, "w") as file:
+                file.write(transcribed_text)
+
+            print(f"La transcripción se ha guardado en {output_file}")
         elif option == '4':
             print(Fore.RED + "Selecciona el motor de optimización semántica:")
             print(Fore.YELLOW + "1) ChatGPT")
