@@ -35,7 +35,7 @@ chat.append({"question": contenido, "answer": ""})
 contenido_filtrado = "\n".join([linea for linea in contenido.splitlines() if not linea.strip().startswith("Entrevistador:")])
 
 # Obtener respuesta del modelo
-respuesta_bot = obtener_respuesta("Actúa como un experto en formateo de entrevistas. Voy a darte un texto de una entrevista a continuacion con labels de entrevistado y entrevistador. relee la entrevista. elimina todo el texto relacionado con el entrevistador y devuelve solo el texto relacionado con el entrevistado, sin etiquetas y en un parrafo de seguido. el texto con el que debes hacer esto es el siguiente: ", chat)
+respuesta_bot = obtener_respuesta("Actúa como un experto en formateo de texto de entrevistas. Voy a darte un texto de una entrevista a continuacion. relee la entrevista reconociendo quien tiene el papel de entrevistador y quien el papel de entrevistado segun las etiquetas de cada linea o parrafo. elimina todo el texto relacionado con el entrevistador y dame unicamente el texto relacionado con el entrevistado, primero con el formato de entrevista, y despues al final reescrito en un parrafo, eliminando sus etiquetas, con todas las lineas que dijo el entrevistado de seguido sin saltos de linea. el texto con el que debes hacer esto es el siguiente: ", chat)
 
 # Imprimir la respuesta formateada en la consola
 respuesta_bot_legible = codecs.decode(respuesta_bot, 'unicode_escape')
@@ -47,4 +47,3 @@ with codecs.open("respuestas.txt", "w", "utf-8") as archivo_respuestas:
     archivo_respuestas.write(f"Salida:\n{respuesta_bot_legible}\n")
 
 print("Conversación guardada en 'respuestas.txt'")
-
