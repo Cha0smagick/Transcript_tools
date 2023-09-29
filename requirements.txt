@@ -1,0 +1,10 @@
+pydub==0.25.1
+colorama==0.4.4
+tqdm==4.62.0
+gpt4free==0.1.0
+codecs==0.2.0
+whisper==0.3.1
+speechrecognition==3.8.1
+gtts==2.2.3
+moviepy==1.0.3
+openai==0.27.0
