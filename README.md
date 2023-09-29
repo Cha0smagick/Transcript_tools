@@ -1,14 +1,69 @@
-# Multi-Purpose Text and Audio Processing Toolkit
-This GitHub repository contains a versatile toolkit for text and audio processing tasks, designed to streamline various tasks related to transcription, text optimization, and audio synthesis. The toolkit offers a user-friendly command-line interface with several key functionalities:
+# Survey Analysis and Text-to-Audio Conversion
 
-Audio-to-Text Transcription: Convert audio files (in WAV format) into text using Google's speech recognition service. The resulting transcriptions are saved in text files for easy access.
+This repository contains two Python programs for survey analysis and text-to-audio conversion. The first program allows you to convert video and audio files to MP3 format and optimize MP3 audio files. The second program utilizes GPT-4 for text generation tasks.
 
-Text-to-Audio Conversion: Transform text files into audio files (in WAV format) using Google Text-to-Speech (gTTS). This feature supports multiple languages, including Spanish.
+## Table of Contents
 
-Semantic Optimization: Enhance the semantic quality of textual content through two distinct methods:
-        ChatGPT Integration: Utilize ChatGPT, a powerful language model, to improve the coherence and fluency of provided text.
-        Bard AI Integration: Employ Bard AI, a text correction and enhancement tool, to refine text and correct errors.
+- [Installation](#installation)
+- [Usage](#usage)
+- [Program 1: Survey Analysis](#program-1-survey-analysis)
+- [Program 2: Text Generation](#program-2-text-generation)
 
-MP4-to-WAV Conversion: Convert MP4 video files into WAV audio files, allowing users to extract and manipulate audio from videos.
+## Installation
 
-The toolkit is designed for flexibility and ease of use, making it suitable for various applications, from transcribing audio recordings to improving the quality of textual content. It incorporates external libraries, such as SpeechRecognition, gTTS, GPT-4, Bard API, and MoviePy, to provide comprehensive functionality.
+To run these programs, you'll need Python 3.x installed on your system. You can follow these steps to set up your environment:
+
+1. Clone this repository to your local machine using Git:
+
+   ```bash
+   git clone https://github.com/Cha0smagick/Transcript_tools
+   cd Transcript_tools
+
+    Install the required Python packages using pip. Create a virtual environment first (optional but recommended) and activate it:
+
+    bash
+
+python -m venv venv
+source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+
+Then, install the dependencies:
+
+bash
+
+    pip install -r requirements.txt
+
+Usage
+Program 1: Survey Analysis
+
+This program offers the following features:
+
+    Convert video and audio files to MP3 format.
+    Optimize MP3 audio files by increasing volume and enhancing vocal frequencies.
+    Convert audio to text using the Whisper ASR model.
+
+To run the program, execute the following command:
+
+bash
+
+python Interview_analysis_tools_BASE.py
+
+Follow the on-screen menu to choose from the available options.
+Program 2: Text Generation
+
+This program utilizes the GPT-4 model for text generation tasks. It reads a large text file, splits it into chunks, and generates responses for each chunk.
+
+To use this program, follow these steps:
+
+    Provide a text file (UTF-8 encoded) that you want to analyze. The program will split the text into manageable chunks automatically.
+
+    Run the program with the following command:
+
+    bash
+
+    python python Procesar_textos_largos.py
+
+    The program will interactively generate responses for each chunk and save them in a formatted text file named entrevistas_completa_formateada.txt.
+
+License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
