@@ -58,9 +58,7 @@ To use this program, follow these steps:
 
     Run the program with the following command:
 
-    bash
-
-    python python Procesar_textos_largos.py
+    python Procesar_textos_largos.py
 
     The program will interactively generate responses for each chunk and save them in a formatted text file named entrevistas_completa_formateada.txt.
 
