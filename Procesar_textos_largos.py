@@ -41,7 +41,7 @@ barra_progreso_chunks = tqdm(total=len(chunks), desc="Procesando Chunks")
 for chunk in chunks:
     # Obtener respuesta del modelo para el chunk actual
     respuesta_bot = obtener_respuesta(
-        f"No hagas comentarios de nada ni indiques secciones! limitate a hacer lo que te digo sin comentar. analiza y lee linea a linea, frase a frase y reconoce automáticamente los roles de entrevistador y entrevistado en el siguiente texto de una porcion de entrevista y formatea el output como esa porcion de entrevista con labels antecediendo cada linea, palabra o frase con labels de entrevistador y entrevistado, presentando el mismo el orden del desarrollo de la porcion de la entrevista, con un salto de linea de separacion entre cada una. Etiqueta cada palabra o línea o frase o párrafo según corresponda: {chunk}"
+        f"No hagas comentarios de nada ni indiques secciones! limitate a hacer lo que te digo sin comentar: lee linea a linea frase a frase e identifica y reconoce los roles de entrevistador y entrevistado en el siguiente texto de una porcion de entrevista y formatea la salida como esa porcion de entrevista con etiquetas antecediendo cada linea, palabra o frase con etiquetas de entrevistador y entrevistado, presentando el mismo el orden del desarrollo de la porcion de la entrevista, con un salto de linea de separacion entre cada una. Etiqueta cada palabra o línea o frase o párrafo según corresponda: {chunk}"
     )
 
     # Formatear la respuesta utilizando codecs para mostrar caracteres Unicode
