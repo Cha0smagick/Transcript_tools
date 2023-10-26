@@ -22,41 +22,43 @@ def decode_response(response):
 # Función para convertir un archivo a .mp3 (admite mp4, mpg y mp3)
 def convert_to_mp3(input_file, output_file):
     try:
-        input_path = Path(input_file)
-        if input_path.suffix.lower() in ['.mp4', '.mpg', '.mp3']:
+        input_path = Path(input_file).resolve()
+        if input_path.suffix.lower() in ['.mp4', '.mpg', '.mp3'] and input_path.is_file():
             audio = AudioSegment.from_file(input_path)
-            audio.export(output_file, format='mp3')
+            output_path = Path(output_file).resolve()
+            audio.export(output_path, format='mp3')
+            print(f"Conversión exitosa de {input_path} a {output_path}")
         else:
             print("Formato de archivo no compatible. Se admiten archivos .mp4, .mpg y .mp3.")
-            return
-
-        print(f"Conversión exitosa de {input_file} a {output_file}")
     except Exception as e:
         print(f"Error al convertir {input_file} a {output_file}: {str(e)}")
 
 # Función para optimizar archivo MP3
 def optimizar_audio_mp3(input_file):
     try:
-        input_path = Path(input_file)
-        # Cargar el archivo MP3
-        audio = AudioSegment.from_mp3(input_path)
+        input_path = Path(input_file).resolve()
+        if input_path.is_file() and input_path.suffix.lower() == '.mp3':
+            # Cargar el archivo MP3
+            audio = AudioSegment.from_mp3(input_path)
 
-        # Aumentar el volumen en 10 dB (ajusta según sea necesario)
-        audio = audio + 10
+            # Aumentar el volumen en 10 dB (ajusta según sea necesario)
+            audio = audio + 10
 
-        # Amplificar las frecuencias vocales (acentuar la voz)
-        audio = audio.high_pass_filter(500)  # Eliminar frecuencias bajas
-        audio = audio.low_pass_filter(5000)  # Eliminar frecuencias altas
+            # Amplificar las frecuencias vocales (acentuar la voz)
+            audio = audio.high_pass_filter(500)  # Eliminar frecuencias bajas
+            audio = audio.low_pass_filter(5000)  # Eliminar frecuencias altas
 
-        # Reproducir el audio optimizado
-        play(audio)
+            # Reproducir el audio optimizado
+            play(audio)
 
-        # Guardar el audio optimizado en un nuevo archivo
-        output_path = Path("audio_optimizado.mp3")
-        audio.export(output_path, format="mp3")
+            # Guardar el audio optimizado en un nuevo archivo
+            output_path = Path("audio_optimizado.mp3").resolve()
+            audio.export(output_path, format="mp3")
 
-        print(f"El audio optimizado se ha guardado en {output_path}")
+            print(f"El audio optimizado se ha guardado en {output_path}")
 
+        else:
+            print("Formato de archivo no compatible. Se admite solo un archivo .mp3.")
     except Exception as e:
         print(f"Se produjo un error: {e}")
 
@@ -85,38 +87,21 @@ def main():
 
         if option == '1':
             input_file = input("Ingrese la ruta del archivo (MP4, MPG o MP3) a convertir a MP3: ")
-            if not Path(input_file).is_file():
-                print("El archivo no existe")
-                continue
             output_file = input("Ingrese el nombre del archivo de salida MP3: ")
             convert_to_mp3(input_file, output_file)
         elif option == '2':
             audio_file = input("Ingrese la ruta del archivo MP3: ")
-            if not Path(audio_file).is_file():
-                print("El archivo no existe")
-                continue
             optimizar_audio_mp3(audio_file)
         elif option == '3':
             # Solicitar al usuario la ruta del archivo .mp3
             file_path = input("Por favor, ingresa la ruta del archivo .mp3: ")
-
-            # Cargar el modelo Whisper
             model = whisper.load_model("small")  # tiny, base, small, medium, large
-
-            # Transcribir el archivo de audio
             result = model.transcribe(file_path)
-
-            # Obtener el texto transcribido
             transcribed_text = result["text"]
-
-            # Imprimir el texto transcribido
             print(transcribed_text)
-
-            # Exportar el texto a un archivo .txt
             output_file = "transcripcion.txt"
             with open(output_file, "w") as file:
                 file.write(transcribed_text)
-
             print(f"La transcripción se ha guardado en {output_file}")
         elif option == '4':
             print("Saliendo del programa.")
