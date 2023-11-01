@@ -10,10 +10,6 @@ from colorama import Fore, Style
 from gpt4free import you  # Importamos gpt4free
 import time  # Importamos la biblioteca time
 import whisper
-from npath import Path  # Utilizamos npath para manejar rutas de archivo
-
-# Inicializamos colorama
-Fore.RESET
 
 # Función para decodificar la respuesta en texto legible
 def decode_response(response):
@@ -22,12 +18,10 @@ def decode_response(response):
 # Función para convertir un archivo a .mp3 (admite mp4, mpg y mp3)
 def convert_to_mp3(input_file, output_file):
     try:
-        input_path = Path(input_file).resolve()
-        if input_path.is_file() and input_path.suffix.lower() in ['.mp4', '.mpg', '.mp3']:
-            audio = AudioSegment.from_file(input_path)
-            output_path = Path(output_file).resolve()
-            audio.export(output_path, format='mp3')
-            print(f"Conversión exitosa de {input_path} a {output_path}")
+        if os.path.isfile(input_file) and input_file.lower().endswith(('.mp4', '.mpg', '.mp3')):
+            audio = AudioSegment.from_file(input_file)
+            audio.export(output_file, format='mp3')
+            print(f"Conversión exitosa de {input_file} a {output_file}")
         else:
             print("Formato de archivo no compatible. Se admiten archivos .mp4, .mpg y .mp3.")
     except Exception as e:
@@ -36,10 +30,9 @@ def convert_to_mp3(input_file, output_file):
 # Función para optimizar archivo MP3
 def optimizar_audio_mp3(input_file):
     try:
-        input_path = Path(input_file).resolve()
-        if input_path.is_file() and input_path.suffix.lower() == '.mp3':
+        if os.path.isfile(input_file) and input_file.lower().endswith('.mp3'):
             # Cargar el archivo MP3
-            audio = AudioSegment.from_mp3(input_path)
+            audio = AudioSegment.from_mp3(input_file)
 
             # Aumentar el volumen en 10 dB (ajusta según sea necesario)
             audio = audio + 10
@@ -52,10 +45,9 @@ def optimizar_audio_mp3(input_file):
             play(audio)
 
             # Guardar el audio optimizado en un nuevo archivo
-            output_path = Path("audio_optimizado.mp3").resolve()
-            audio.export(output_path, format="mp3")
+            audio.export("audio_optimizado.mp3", format="mp3")
 
-            print(f"El audio optimizado se ha guardado en {output_path}")
+            print(f"El audio optimizado se ha guardado en audio_optimizado.mp3")
 
         else:
             print("Formato de archivo no compatible. Se admite solo un archivo .mp3.")
