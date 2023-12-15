@@ -6,6 +6,7 @@ from colorama import Fore, Style
 import codecs
 import streamlit as st
 import whisper
+import uuid
 
 # Inicializamos colorama
 Fore.RESET
@@ -14,24 +15,26 @@ Fore.RESET
 def decode_response(response):
     return codecs.decode(response, 'unicode_escape')
 
-# Función para convertir un archivo a .mp3 (admite mp4, mpg y mp3)
-def convert_to_mp3(input_file, output_file):
+# Función para convertir cualquier formato de audio a .mp3
+def convert_to_mp3(input_file):
     try:
-        if input_file.name.lower().endswith(('.mp4', '.mpg', '.mp3')):
-            audio = AudioSegment.from_file(input_file)
-            audio.export(output_file, format='mp3')
-            st.success(f"Conversión exitosa de {input_file.name} a {output_file}")
+        audio = AudioSegment.from_file(input_file)
+        
+        # Obtener el nombre base del archivo sin la extensión
+        base_file_name = os.path.splitext(input_file.name)[0]
+        
+        # Agregar la extensión .mp3 al nombre base del archivo
+        output_file_name = base_file_name + ".mp3"
+        
+        audio.export(output_file_name, format='mp3')
+        st.success(f"Conversión exitosa a {output_file_name}")
 
-            # Botón de descarga
-            st.download_button(label="Descargar archivo MP3", data=audio.export(format="mp3").read(),
-                               file_name=output_file, key='convert_to_mp3')
-
-        else:
-            st.error("Formato de archivo no compatible. Se admiten archivos .mp4, .mpg y .mp3.")
-            return
+        # Botón de descarga
+        st.download_button(label=f"Descargar {output_file_name}", data=audio.export(format="mp3").read(),
+                           file_name=output_file_name, key='convert_to_mp3')
 
     except Exception as e:
-        st.error(f"Error al convertir {input_file.name} a {output_file}: {str(e)}")
+        st.error(f"Error al convertir el archivo: {str(e)}")
 
 # Función para optimizar archivo MP3
 def optimizar_audio_mp3(input_file):
@@ -49,31 +52,36 @@ def optimizar_audio_mp3(input_file):
         # Reproducir el audio optimizado
         play(audio)
 
-        # Guardar el audio optimizado en un nuevo archivo
-        output_path = "audio_optimizado.mp3"
-        audio.export(output_path, format="mp3")
+        # Obtener el nombre base del archivo sin la extensión
+        base_file_name = os.path.splitext(input_file.name)[0]
 
-        st.success(f"El audio optimizado se ha guardado en {output_path}")
+        # Generar un nombre de archivo único para el audio optimizado
+        output_file_name = base_file_name + "_optimizado.mp3"
+        audio.export(output_file_name, format="mp3")
+
+        st.success(f"El audio optimizado se ha guardado en {output_file_name}")
 
         # Botón de descarga
-        st.download_button(label="Descargar audio optimizado", data=audio.export(format="mp3").read(),
-                           file_name=output_path, key='optimizar_audio_mp3')
+        st.download_button(label=f"Descargar {output_file_name}", data=audio.export(format="mp3").read(),
+                           file_name=output_file_name, key='optimizar_audio_mp3')
 
     except Exception as e:
         st.error(f"Se produjo un error: {e}")
 
 # Función principal del programa
 def main():
-    st.title("Programa de Análisis de Encuestas del INIF")
+    st.title("AUDIO2TEXT - Transcripción de archivos Multimedia para INIF")
+
+    # Agregar el logotipo centrado justo arriba del título
+    st.image("https://i.ibb.co/2j2gGW1/logo-inif.png", use_column_width=True)
 
     option = st.sidebar.selectbox("Selecciona una opción", ["Convertir a MP3", "Optimización de audio para archivos .mp3", "Audio a Texto", "Salir del programa"])
 
     if option == "Convertir a MP3":
-        input_file = st.file_uploader("Cargar archivo (MP4, MPG o MP3) a convertir a MP3", type=["mp4", "mpg", "mp3"])
+        input_file = st.file_uploader("Cargar archivo de audio para convertir a MP3", type=["mp3", "m4a", "wav", "flac", "ogg", "aac"])
         if input_file is not None:
-            output_file = st.text_input("Ingrese el nombre del archivo de salida MP3:")
             if st.button("Convertir"):
-                convert_to_mp3(input_file, output_file)
+                convert_to_mp3(input_file)
 
     elif option == "Optimización de audio para archivos .mp3":
         audio_file = st.file_uploader("Cargar archivo MP3 a optimizar", type=["mp3"])
@@ -97,16 +105,19 @@ def main():
                 # Imprimir el texto transcribido
                 st.text(transcribed_text)
 
+                # Generar un nombre de archivo único para la transcripción
+                base_file_name = os.path.splitext(file_path.name)[0]
+                output_file_name = base_file_name + "_transcripcion.txt"
+
                 # Exportar el texto a un archivo .txt
-                output_file = "transcripcion.txt"
-                with open(output_file, "w") as file:
+                with open(output_file_name, "w") as file:
                     file.write(transcribed_text)
 
-                st.success(f"La transcripción se ha guardado en {output_file}")
+                st.success(f"La transcripción se ha guardado en {output_file_name}")
 
                 # Botón de descarga
-                st.download_button(label="Descargar transcripción", data=transcribed_text.encode("utf-8"),
-                                   file_name=output_file, key='transcripcion')
+                st.download_button(label=f"Descargar {output_file_name}", data=transcribed_text.encode("utf-8"),
+                                   file_name=output_file_name, key='transcripcion')
 
     elif option == "Salir del programa":
         st.text("Saliendo del programa.")
