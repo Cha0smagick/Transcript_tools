@@ -68,6 +68,38 @@ def optimizar_audio_mp3(input_file):
     except Exception as e:
         st.error(f"Se produjo un error: {e}")
 
+# Función para transcribir archivo de audio a texto
+def transcribir_audio_a_texto(file_path):
+    try:
+        # Cargar el modelo Whisper
+        model = whisper.load_model("small")  # tiny, base, small, medium, large
+
+        # Transcribir el archivo de audio
+        result = model.transcribe(file_path.name)
+
+        # Obtener el texto transcribido
+        transcribed_text = result["text"]
+
+        # Imprimir el texto transcribido
+        st.text(transcribed_text)
+
+        # Generar un nombre de archivo único para la transcripción
+        base_file_name = os.path.splitext(file_path.name)[0]
+        output_file_name = base_file_name + "_transcripcion.txt"
+
+        # Exportar el texto a un archivo .txt
+        with open(output_file_name, "w") as file:
+            file.write(transcribed_text)
+
+        st.success(f"La transcripción se ha guardado en {output_file_name}")
+
+        # Botón de descarga
+        st.download_button(label=f"Descargar {output_file_name}", data=transcribed_text.encode("utf-8"),
+                           file_name=output_file_name, key='transcripcion')
+
+    except Exception as e:
+        st.error(f"Se produjo un error: {e}")
+
 # Función principal del programa
 def main():
     st.title("AUDIO2TEXT - Transcripción de archivos Multimedia para INIF")
@@ -75,52 +107,28 @@ def main():
     # Agregar el logotipo centrado justo arriba del título
     st.image("https://i.ibb.co/2j2gGW1/logo-inif.png", use_column_width=True)
 
-    option = st.sidebar.selectbox("Selecciona una opción", ["Convertir a MP3", "Optimización de audio para archivos .mp3", "Audio a Texto", "Salir del programa"])
+    # Botones en la sidebar
+    convert_button = st.sidebar.button("Convertir a MP3")
+    optimize_button = st.sidebar.button("Optimización de audio para archivos .mp3")
+    transcribe_button = st.sidebar.button("Audio a Texto")
 
-    if option == "Convertir a MP3":
+    if convert_button:
         input_file = st.file_uploader("Cargar archivo de audio para convertir a MP3", type=["mp3", "m4a", "wav", "flac", "ogg", "aac"])
         if input_file is not None:
             if st.button("Convertir"):
                 convert_to_mp3(input_file)
 
-    elif option == "Optimización de audio para archivos .mp3":
+    elif optimize_button:
         audio_file = st.file_uploader("Cargar archivo MP3 a optimizar", type=["mp3"])
         if audio_file is not None:
             if st.button("Optimizar"):
                 optimizar_audio_mp3(audio_file)
 
-    elif option == "Audio a Texto":
+    elif transcribe_button:
         file_path = st.file_uploader("Cargar archivo .mp3 para transcribir", type=["mp3"])
         if file_path is not None:
             if st.button("Transcribir"):
-                # Cargar el modelo Whisper
-                model = whisper.load_model("small")  # tiny, base, small, medium, large
-
-                # Transcribir el archivo de audio
-                result = model.transcribe(file_path.name)
-
-                # Obtener el texto transcribido
-                transcribed_text = result["text"]
-
-                # Imprimir el texto transcribido
-                st.text(transcribed_text)
-
-                # Generar un nombre de archivo único para la transcripción
-                base_file_name = os.path.splitext(file_path.name)[0]
-                output_file_name = base_file_name + "_transcripcion.txt"
-
-                # Exportar el texto a un archivo .txt
-                with open(output_file_name, "w") as file:
-                    file.write(transcribed_text)
-
-                st.success(f"La transcripción se ha guardado en {output_file_name}")
-
-                # Botón de descarga
-                st.download_button(label=f"Descargar {output_file_name}", data=transcribed_text.encode("utf-8"),
-                                   file_name=output_file_name, key='transcripcion')
-
-    elif option == "Salir del programa":
-        st.text("Saliendo del programa.")
+                transcribir_audio_a_texto(file_path)
 
 if __name__ == "__main__":
     main()
