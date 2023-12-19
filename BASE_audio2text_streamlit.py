@@ -19,63 +19,38 @@ def decode_response(response):
 def convert_to_mp3(input_file):
     try:
         audio = AudioSegment.from_file(input_file)
-        
-        # Obtener el nombre base del archivo sin la extensión
         base_file_name = os.path.splitext(input_file.name)[0]
-        
-        # Agregar la extensión .mp3 al nombre base del archivo
         output_file_name = base_file_name + ".mp3"
-        
         audio.export(output_file_name, format='mp3')
         st.success(f"Conversión exitosa a {output_file_name}")
-
-        # Botón de descarga
         st.download_button(label=f"Descargar {output_file_name}", data=audio.export(format="mp3").read(),
                            file_name=output_file_name, key='convert_to_mp3')
-
     except Exception as e:
         st.error(f"Error al convertir el archivo: {str(e)}")
 
 # Función para optimizar archivo MP3
 def optimizar_audio_mp3(input_file):
     try:
-        # Cargar el archivo MP3
         audio = AudioSegment.from_mp3(input_file.name)
-
-        # Aumentar el volumen en 10 dB (ajusta según sea necesario)
         audio = audio + 10
-
-        # Amplificar las frecuencias vocales (acentuar la voz)
-        audio = audio.high_pass_filter(500)  # Eliminar frecuencias bajas
-        audio = audio.low_pass_filter(5000)  # Eliminar frecuencias altas
-
-        # Reproducir el audio optimizado
+        audio = audio.high_pass_filter(500)
+        audio = audio.low_pass_filter(5000)
         play(audio)
-
-        # Obtener el nombre base del archivo sin la extensión
         base_file_name = os.path.splitext(input_file.name)[0]
-
-        # Generar un nombre de archivo único para el audio optimizado
         output_file_name = base_file_name + "_optimizado.mp3"
         audio.export(output_file_name, format="mp3")
-
         st.success(f"El audio optimizado se ha guardado en {output_file_name}")
-
-        # Botón de descarga
         st.download_button(label=f"Descargar {output_file_name}", data=audio.export(format="mp3").read(),
                            file_name=output_file_name, key='optimizar_audio_mp3')
-
     except Exception as e:
         st.error(f"Se produjo un error: {e}")
 
 # Función principal del programa
 def main():
     st.title("AUDIO2TEXT - Transcripción de archivos Multimedia para INIF")
-
-    # Agregar el logotipo centrado justo arriba del título
     st.image("https://i.ibb.co/2j2gGW1/logo-inif.png", use_column_width=True)
 
-    option = st.sidebar.selectbox("Selecciona una opción", ["Convertir a MP3", "Optimización de audio para archivos .mp3", "Audio a Texto", "Salir del programa"])
+    option = st.sidebar.selectbox("Selecciona una opción", ["Convertir a MP3", "Optimización de audio para archivos .mp3", "Audio a Texto"])
 
     if option == "Convertir a MP3":
         input_file = st.file_uploader("Cargar archivo de audio para convertir a MP3", type=["mp3", "m4a", "wav", "flac", "ogg", "aac"])
@@ -93,34 +68,17 @@ def main():
         file_path = st.file_uploader("Cargar archivo .mp3 para transcribir", type=["mp3"])
         if file_path is not None:
             if st.button("Transcribir"):
-                # Cargar el modelo Whisper
-                model = whisper.load_model("small")  # tiny, base, small, medium, large
-
-                # Transcribir el archivo de audio
+                model = whisper.load_model("small")
                 result = model.transcribe(file_path.name)
-
-                # Obtener el texto transcribido
                 transcribed_text = result["text"]
-
-                # Imprimir el texto transcribido
                 st.text(transcribed_text)
-
-                # Generar un nombre de archivo único para la transcripción
                 base_file_name = os.path.splitext(file_path.name)[0]
                 output_file_name = base_file_name + "_transcripcion.txt"
-
-                # Exportar el texto a un archivo .txt
                 with open(output_file_name, "w") as file:
                     file.write(transcribed_text)
-
                 st.success(f"La transcripción se ha guardado en {output_file_name}")
-
-                # Botón de descarga
                 st.download_button(label=f"Descargar {output_file_name}", data=transcribed_text.encode("utf-8"),
                                    file_name=output_file_name, key='transcripcion')
-
-    elif option == "Salir del programa":
-        st.text("Saliendo del programa.")
 
 if __name__ == "__main__":
     main()
